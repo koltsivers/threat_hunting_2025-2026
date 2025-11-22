@@ -41,12 +41,80 @@ http://ip-api.com/json).
 
 ### Шаг 1: Импортируйте данные DNS – https://storage.yandexcloud.net/dataset.ctfsec/dns.zip. Данные были собраны с помощью сетевого анализатора zeek
 
+```
+> install.packages("readr")
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/readr_2.1.6.zip'
+Content type 'application/zip' length 1237991 bytes (1.2 MB)
+downloaded 1.2 MB
+
+пакет ‘readr’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\RtmpyyNVaA\downloaded_packages
+> install.packages("dplyr")
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/dplyr_1.1.4.zip'
+Content type 'application/zip' length 1593482 bytes (1.5 MB)
+downloaded 1.5 MB
+
+пакет ‘dplyr’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\RtmpyyNVaA\downloaded_packages
+> install.packages("stringr")
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/stringr_1.6.0.zip'
+Content type 'application/zip' length 349425 bytes (341 KB)
+downloaded 341 KB
+
+пакет ‘stringr’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\RtmpyyNVaA\downloaded_packages
+> install.packages("httr")
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/httr_1.4.7.zip'
+Content type 'application/zip' length 502674 bytes (490 KB)
+downloaded 490 KB
+
+пакет ‘httr’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\RtmpyyNVaA\downloaded_packages
+> install.packages("jsonlite")
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/jsonlite_2.0.0.zip'
+Content type 'application/zip' length 1110706 bytes (1.1 MB)
+downloaded 1.1 MB
+
+пакет ‘jsonlite’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\RtmpyyNVaA\downloaded_packages
+```
+
 ```{r}
-install.packages("readr")
-install.packages("dplyr")
-install.packages("stringr")
-install.packages("httr")
-install.packages("jsonlite")
 library(httr)
 library(jsonlite)
 library(readr)
