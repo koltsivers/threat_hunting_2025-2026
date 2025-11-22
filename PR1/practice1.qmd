@@ -245,7 +245,6 @@ Select 1, 2, or 3 and press Enter
 | To view the contents of the variable x, just type x and press Enter. Try it
 | now.
 
-> 
 > x
 [1] 12
 
@@ -490,7 +489,6 @@ Select 1, 2, or 3 and press Enter
 | workspace. Give it a try. (If auto-completion doesn't work for you, just type
 | my_div and press Enter.)
 
-> 
 > my_div
 [1] 3.478505 3.181981 2.146460
 
@@ -964,7 +962,6 @@ mytest.R 2025-11-22 10:26:40  no Daniil DESKTOP-69FQPAM
   |=============================================                                          |  52%
 | To confirm that my_seq has length 30, we can use the length() function. Try it now.
 
-> 
 > length(my_seq)
 [1] 30
 
@@ -1293,7 +1290,6 @@ mytest.R 2025-11-22 10:26:40  no Daniil DESKTOP-69FQPAM
   |================================================================                       |  74%
 | Take a look at the contents of my_name.
 
-> 
 > my_name
 [1] "My"     "name"   "is"     "Daniil"
 
@@ -1531,7 +1527,6 @@ mytest.R 2025-11-22 10:26:40  no Daniil DESKTOP-69FQPAM
 | Pretty cool, huh? Finally, let's take a look at the data to convince ourselves that everything 'adds up'. Print my_data to
 | the console.
 
-> 
 > my_data
   [1]  0.32496659          NA -0.61269118 -0.33774439  0.42985671          NA  0.45767771          NA          NA          NA
  [11]  0.16173388          NA -1.51444081          NA  0.25498424          NA  0.79278693  0.09969184  1.09790012  0.09016732
