@@ -47,7 +47,7 @@ format:
 ```{r}
 install.packages("dplyr")
 library(dplyr)
-data(starwars
+data(starwars)
 ```
 
 #### Сколько строк в датафрейме?
