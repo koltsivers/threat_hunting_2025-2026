@@ -63,6 +63,13 @@ downloaded 4.3 MB
   C:\Users\Daniil\AppData\Local\Temp\RtmpmsiLms\downloaded_packages
 ```
 
+#### Подключим необходимые библиотеки
+
+```{r}
+library(nycflights13)
+library(dplyr)
+```
+
 #### Сколько встроенных в пакет nycflights13 датафреймов?
 
 ```{r}
