@@ -1,0 +1,183 @@
+---
+title: "Практическая работа №3"
+author: "koltsivers@yandex.ru"
+format: 
+  md:
+    output-file: README.md
+---
+
+## Цель работы
+
+1. Развить практические навыки использования языка программирования R для обработки данных
+2. Закрепить знания базовых типов данных языка R
+3. Развить практические навыки использования функций обработки данных пакета `dplyr` – функции `select(), filter(), mutate(), arrange(), group_by()`
+
+## Исходные данные
+
+1. Программное обеспечение Microsoft Windows 11 Pro
+2. RStudio Desktop
+3. Интерпретатор языка R 4.5.2
+
+## Задание
+
+Используя программный пакет dplyr, освоить базовые операции в языке программирования R.
+
+## Ход работы
+
+1. Проанализировать встроенные в пакет nycflights13 наборы данных с помощью
+языка R и ответить на вопросы:
+    - Сколько встроенных в пакет nycflights13 датафреймов?
+    - Сколько строк в каждом датафрейме?
+    - Сколько столбцов в каждом датафрейме?
+    - Как просмотреть примерный вид датафрейма?
+    - Сколько компаний-перевозчиков (carrier) учитывают эти наборы данных (представлено в наборах данных)?
+    - Сколько рейсов принял аэропорт John F Kennedy Intl в мае?
+    - Какой самый северный аэропорт?
+    - Какой аэропорт самый высокогорный (находится выше всех над уровнем моря)?
+    - Какие бортовые номера у самых старых самолетов?
+    - Какая средняя температура воздуха была в сентябре в аэропорту John FKennedy Intl (в градусах Цельсия).
+    - Самолеты какой авиакомпании совершили больше всего вылетов в июне?
+    - Самолеты какой авиакомпании задерживались чаще других в 2013 году?
+2. Оценить результаты и сделать вывод
+
+## Шаги:
+
+### Шаг 1
+
+#### Установим пакет nycflights13 с помощью install.packages('nycflights13').
+
+```
+> install.packages("nycflights13")
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/nycflights13_1.0.2.zip'
+Content type 'application/zip' length 4511548 bytes (4.3 MB)
+downloaded 4.3 MB
+
+пакет ‘nycflights13’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\RtmpmsiLms\downloaded_packages
+```
+
+#### Сколько встроенных в пакет nycflights13 датафреймов?
+
+```{r}
+length(ls("package:nycflights13"))
+```
+
+#### Сколько строк в каждом датафрейме?
+
+```{r}
+nrow(airlines)
+nrow(airports) 
+nrow(flights)
+nrow(planes)
+nrow(weather)
+```
+
+#### Сколько столбцов в каждом датафрейме?
+
+```{r}
+ncol(airlines)
+ncol(airports)
+ncol(flights) 
+ncol(planes)
+ncol(weather)
+```
+
+#### Как просмотреть примерный вид датафрейма?
+
+```{r}
+head(airlines)
+```
+
+#### Сколько компаний-перевозчиков (carrier) учитывают эти наборы данных (представлено в наборах данных)?
+
+```{r}
+unique_airlines <- unique(airlines$carrier)
+length(unique_airlines)
+```
+
+#### Сколько рейсов принял аэропорт John F Kennedy Intl в мае?
+
+```{r}
+flights %>%
+  filter(dest == "JFK", month == 5) %>%
+  nrow()
+```
+
+#### Какой самый северный аэропорт?
+
+```{r}
+airports %>%
+  arrange(desc(lat)) %>%
+  head(1) %>%
+  select(name, lat)
+```
+
+#### Какой аэропорт самый высокогорный (находится выше всех над уровнем моря)?
+
+```{r}
+airports %>%
+  arrange(desc(alt)) %>%
+  head(1) %>%
+  select(name, alt)
+```
+
+#### Какие бортовые номера у самых старых самолетов?
+
+```{r}
+planes %>%
+  filter(year == min(year, na.rm = TRUE)) %>%
+  select(tailnum, year)
+```
+
+#### Какая средняя температура воздуха была в сентябре в аэропорту John FKennedy Intl (в градусах Цельсия).
+
+```{r}
+weather %>%
+  filter(origin == "JFK", month == 9) %>%
+  summarise(
+    mean_fahrenheit = mean(temp, na.rm = TRUE),
+    mean_celsius = (mean_fahrenheit - 32) * 5/9
+  )
+```
+
+#### Самолеты какой авиакомпании совершили больше всего вылетов в июне?
+
+```{r}
+flights %>%
+  filter(month == 6) %>%
+  count(carrier, sort = TRUE) %>%
+  head(1) %>%
+  left_join(airlines, by = "carrier") %>%
+  select(name, n)
+```
+
+#### Самолеты какой авиакомпании задерживались чаще других в 2013 году?
+
+```{r}
+flights %>%
+  filter(!is.na(dep_delay) & !is.na(arr_delay)) %>%
+  mutate(delayed = dep_delay > 0 | arr_delay > 0) %>%
+  group_by(carrier) %>%
+  summarise(delayed_flights = sum(delayed),
+            total_flights = n(),
+            delay_ratio = delayed_flights / total_flights) %>%
+  arrange(desc(delay_ratio)) %>%
+  left_join(airlines, by = "carrier")
+```
+
+### Шаг 2
+
+#### Оценка результатов
+
+В результате выполнения данной практической работы мы развили навыки использования языка программирования R для обработки данных
+
+#### Вывод 
+
+Мы научились использовать функции обработки данных пакета dplyr – функции select(), filter(), mutate(), arrange(), group_by()
