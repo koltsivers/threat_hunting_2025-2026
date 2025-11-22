@@ -184,7 +184,6 @@ length(all_unique_ips)
 internal_ips <- all_unique_ips[grepl("^(10\\.|192\\.168\\.|172\\.(1[6-9]|2[0-9]|3[0-1])\\.)", all_unique_ips)]
 external_ips <- all_unique_ips[!grepl("^(10\\.|192\\.168\\.|172\\.(1[6-9]|2[0-9]|3[0-1])\\.)", all_unique_ips)]
 length(internal_ips) / length(external_ips)
-
 ```
 
 ### Шаг 6: Найдите топ-10 участников сети, проявляющих наибольшую сетевую активность.
@@ -210,11 +209,23 @@ print(top_10_domains)
 ### Шаг 8: Определите базовые статистические характеристики (функция summary() ) интервала времени между последовательными обращениями к топ-10 доменам.
 
 ```{r}
-top_10_domains <- dns_data_clean %>%
-  count(query, name = "access_count") %>%
-  arrange(desc(access_count)) %>%
-  slice_head(n = 10)
-print(top_10_domains)алов:\n")
+time_interval_stats <- dns_data_clean %>%
+  filter(query %in% top_10_domains$query) %>%
+  arrange(query, timestamp) %>%
+  group_by(query) %>%
+  filter(n() > 1) %>%
+  mutate(
+    time_difference = as.numeric(timestamp - lag(timestamp), units = "secs")
+  ) %>%
+  summarise(
+    min_interval = min(time_difference, na.rm = TRUE),
+    q1_interval = quantile(time_difference, 0.25, na.rm = TRUE),
+    median_interval = median(time_difference, na.rm = TRUE),
+    mean_interval = mean(time_difference, na.rm = TRUE),
+    q3_interval = quantile(time_difference, 0.75, na.rm = TRUE),
+    max_interval = max(time_difference, na.rm = TRUE),
+    .groups = 'drop'
+  )
 print(time_interval_stats)
 ```
 
