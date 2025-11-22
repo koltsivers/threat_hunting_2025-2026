@@ -17,7 +17,7 @@ format:
 
 ## Исходные данные
 
-1. ППрограммное обеспечение Microsoft Windows 11 Pro
+1. Программное обеспечение Microsoft Windows 11 Pro
 2. RStudio Desktop
 3. Интерпретатор языка R 4.5.2
 
