@@ -42,10 +42,9 @@ format:
 
 ### Шаг 1
 
-#### Установка пакета dplyr и загрузхка набора данных starwars
+#### Установка пакета dplyr и загрузка набора данных starwars
 
 ```{r}
-install.packages("dplyr")
 library(dplyr)
 data(starwars)
 ```
