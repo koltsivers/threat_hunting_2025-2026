@@ -54,7 +54,7 @@ qmd/rmd файл в свой репозиторий
 ## Шаги
 
 ```{r}
-> sessionInfo()
+sessionInfo()
 ``` 
 
 ```
