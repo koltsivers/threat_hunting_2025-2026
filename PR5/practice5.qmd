@@ -1,1 +1,341 @@
+---
+title: "Практическая работа №5"
+author: "koltsivers@yandex.ru"
+format: 
+  md:
+    output-file: README.md
+---
+
+## Цель работы
+
+1.  Получить знания о методах исследования радиоэлектронной обстановки.
+2.  Составить представление о механизмах работы Wi-Fi сетей на канальном и сетевом уровне модели OSI.
+3.  Зекрепить практические навыки использования языка программирования R для обработки данных
+4.  Закрепить знания основных функций обработки данных экосистемы tidyverse языка R
+
+## Исходные данные
+
+1. Программное обеспечение Microsoft Windows 11 Pro
+2. RStudio Desktop
+3. Интерпретатор языка R 4.5.2
+
+## План
+
+1.  Импортируйте данные – https://storage.yandexcloud.net/dataset.ctfsec/P2_wifi_data.csv Данные были собраны с помощью анализатора беспроводного трафика airodump-ng
+2.  Привести датасеты в вид “аккуратных данных”, преобразовать типы столбцов в соответствии с типом данных
+3.  Просмотрите общую структуру данных с помощью функции glimpse()
+4.  Произвести анализ данных.
+5.  Определить небезопасные точки доступа (без шифрования – OPN)
+6.  Определить производителя для каждого обнаруженного устройства
+7.  Выявить устройства, использующие последнюю версию протокола шифрования WPA3, и названия точек доступа, реализованных на этих устройствах
+8.  Отсортировать точки доступа по интервалу времени, в течение которого они находились на связи, по убыванию.
+9.  Обнаружить топ-10 самых быстрых точек доступа.
+10. Отсортировать точки доступа по частоте отправки запросов (beacons) в единицу времени по их убыванию. 11.Определить производителя для каждого обнаруженного устройства (пользоваться базой данных производителей из состава Wireshark или онлайн сервисами OUI lookup)
+11. Обнаружить устройства, которые НЕ рандомизируют свой MAC адрес
+12. Кластеризовать запросы от устройств к точкам доступа по их именам. Определить время появления устройства в зоне радиовидимости и время выхода его из нее.
+13. Оценить стабильность уровня сигнала внури кластера во времени. Выявить наиболее стабильный кластер.
+
+## Шаги:
+
+```
+> install.packages("readr")
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/readr_2.1.6.zip'
+Content type 'application/zip' length 1237991 bytes (1.2 MB)
+downloaded 1.2 MB
+
+пакет ‘readr’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\Rtmp4aF99p\downloaded_packages
+> install.packages("dplyr")
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/dplyr_1.1.4.zip'
+Content type 'application/zip' length 1593482 bytes (1.5 MB)
+downloaded 1.5 MB
+
+пакет ‘dplyr’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\Rtmp4aF99p\downloaded_packages
+> install.packages("tidyr") 
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+устанавливаю также зависимость ‘purrr’
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/purrr_1.2.0.zip'
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/tidyr_1.3.1.zip'
+пакет ‘purrr’ успешно распакован, MD5-суммы проверены
+пакет ‘tidyr’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\Rtmp4aF99p\downloaded_packages
+> install.packages("stringr") 
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/stringr_1.6.0.zip'
+Content type 'application/zip' length 349425 bytes (341 KB)
+downloaded 341 KB
+
+пакет ‘stringr’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\Rtmp4aF99p\downloaded_packages
+> install.packages("lubridate") 
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+устанавливаю также зависимость ‘timechange’
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/timechange_0.3.0.zip'
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/lubridate_1.9.4.zip'
+пакет ‘timechange’ успешно распакован, MD5-суммы проверены
+пакет ‘lubridate’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\Rtmp4aF99p\downloaded_packages
+> install.packages("janitor") 
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+устанавливаю также зависимость ‘snakecase’
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/snakecase_0.11.1.zip'
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/janitor_2.2.1.zip'
+пакет ‘snakecase’ успешно распакован, MD5-суммы проверены
+пакет ‘janitor’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\Rtmp4aF99p\downloaded_packages
+> install.packages("R.utils") 
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+устанавливаю также зависимости ‘R.oo’, ‘R.methodsS3’
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/R.oo_1.27.1.zip'
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/R.methodsS3_1.8.2.zip'
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/R.utils_2.13.0.zip'
+пакет ‘R.oo’ успешно распакован, MD5-суммы проверены
+пакет ‘R.methodsS3’ успешно распакован, MD5-суммы проверены
+пакет ‘R.utils’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\Rtmp4aF99p\downloaded_packages
+> install.packages("jsonlite") 
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/jsonlite_2.0.0.zip'
+Content type 'application/zip' length 1110706 bytes (1.1 MB)
+downloaded 1.1 MB
+
+пакет ‘jsonlite’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\Rtmp4aF99p\downloaded_packages
+> install.packages("httr") 
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/httr_1.4.7.zip'
+Content type 'application/zip' length 502674 bytes (490 KB)
+downloaded 490 KB
+
+пакет ‘httr’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\Rtmp4aF99p\downloaded_packages
+> install.packages("V8") 
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+устанавливаю также зависимость ‘Rcpp’
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/Rcpp_1.1.0.zip'
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/V8_8.0.1.zip'
+пакет ‘Rcpp’ успешно распакован, MD5-суммы проверены
+пакет ‘V8’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\Rtmp4aF99p\downloaded_packages
+> install.packages("igraph") 
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/igraph_2.2.1.zip'
+Content type 'application/zip' length 7372238 bytes (7.0 MB)
+downloaded 7.0 MB
+
+пакет ‘igraph’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\Rtmp4aF99p\downloaded_packages
+> install.packages("fpc") 
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+устанавливаю также зависимости ‘modeltools’, ‘DEoptimR’, ‘mclust’, ‘flexmix’, ‘prabclus’, ‘diptest’, ‘robustbase’, ‘kernlab’
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/modeltools_0.2-24.zip'
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/DEoptimR_1.1-4.zip'
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/mclust_6.1.2.zip'
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/flexmix_2.3-20.zip'
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/prabclus_2.3-4.zip'
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/diptest_0.77-2.zip'
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/robustbase_0.99-6.zip'
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/kernlab_0.9-33.zip'
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/fpc_2.2-13.zip'
+пакет ‘modeltools’ успешно распакован, MD5-суммы проверены
+пакет ‘DEoptimR’ успешно распакован, MD5-суммы проверены
+пакет ‘mclust’ успешно распакован, MD5-суммы проверены
+пакет ‘flexmix’ успешно распакован, MD5-суммы проверены
+пакет ‘prabclus’ успешно распакован, MD5-суммы проверены
+пакет ‘diptest’ успешно распакован, MD5-суммы проверены
+пакет ‘robustbase’ успешно распакован, MD5-суммы проверены
+пакет ‘kernlab’ успешно распакован, MD5-суммы проверены
+пакет ‘fpc’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\Rtmp4aF99p\downloaded_packages
+> install.packages("mclust")
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/mclust_6.1.2.zip'
+Content type 'application/zip' length 4168227 bytes (4.0 MB)
+downloaded 4.0 MB
+
+пакет ‘mclust’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\Rtmp4aF99p\downloaded_packages
+```
+
+```{r}
+library("readr")
+library("dplyr")
+library("tidyr") 
+library("stringr") 
+library("lubridate") 
+library("janitor") 
+library("R.utils") 
+library("jsonlite") 
+library("httr") 
+library("V8") 
+library("igraph") 
+library("fpc") 
+library("mclust")
+```
+
+###Задание 1: Импортируйте данные – https://storage.yandexcloud.net/dataset.ctfsec/P2_wifi_data.csv Данные были собраны с помощью анализатора беспроводного трафика airodump-ng
+
+```{r}
+
+```
+
+###Задание 2: Привести датасеты в вид “аккуратных данных”, преобразовать типы столбцов в соответствии с типом данных
+
+```{r}
+
+```
+
+###Задание 3: Просмотрите общую структуру данных с помощью функции glimpse()
+
+```{r}
+
+```
+
+###Задание 4: Произвести анализ данных.
+
+```{r}
+
+```
+
+###Задание 5: Определить небезопасные точки доступа (без шифрования – OPN)
+
+```{r}
+
+```
+
+###Задание 6: Определить производителя для каждого обнаруженного устройства
+
+```{r}
+
+```
+
+###Задание 7: Выявить устройства, использующие последнюю версию протокола шифрования WPA3, и названия точек доступа, реализованных на этих устройствах
+
+```{r}
+
+```
+
+###Задание 8: Отсортировать точки доступа по интервалу времени, в течение которого они находились на связи, по убыванию.
+
+```{r}
+
+```
+
+###Задание 9: Обнаружить топ-10 самых быстрых точек доступа.
+
+```{r}
+
+```
+
+###Задание 10: Отсортировать точки доступа по частоте отправки запросов (beacons) в единицу времени по их убыванию. 11.Определить производителя для каждого обнаруженного устройства
+(пользоваться базой данных производителей из состава Wireshark или онлайн сервисами OUI lookup)
+
+```{r}
+
+```
+
+###Задание 11: Обнаружить устройства, которые НЕ рандомизируют свой MAC адрес
+
+```{r}
+
+```
+
+###Задание 12: Кластеризовать запросы от устройств к точкам доступа по их именам. Определить время появления устройства в зоне радиовидимости и время выхода его из нее.
+
+```{r}
+
+```
+
+###Задание 13: Оценить стабильность уровня сигнала внури кластера во времени. Выявить наиболее стабильный кластер.
+
+
+
+## Оценка результата
+
+В рамках практческой работы была исследована радиоэлектронная обстановка и составлено представление о механизмах работы Wi-Fi сетей на канальном и сетевом уровне модели OSI.
+
+## Вывод
+
+В практической работе мы использовали навыки написания кода на языке программирования R для обработки данных и закрепили знания основных функций обработки данных экосистемы tidyverse языка R.
 
