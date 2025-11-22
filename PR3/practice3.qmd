@@ -46,21 +46,9 @@ format:
 
 #### Установим пакет nycflights13 с помощью install.packages('nycflights13').
 
-```
-> install.packages("nycflights13")
-WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
-
-https://cran.rstudio.com/bin/windows/Rtools/
-Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
-(потому что ‘lib’ не определено)
-пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/nycflights13_1.0.2.zip'
-Content type 'application/zip' length 4511548 bytes (4.3 MB)
-downloaded 4.3 MB
-
-пакет ‘nycflights13’ успешно распакован, MD5-суммы проверены
-
-Скачанные бинарные пакеты находятся в
-	C:\Users\Daniil\AppData\Local\Temp\RtmpmsiLms\downloaded_packages
+```{r}
+options(repos = c(CRAN = "https://mirror.truenetwork.ru/CRAN/"))
+install.packages("nycflights13")
 ```
 
 #### Сколько встроенных в пакет nycflights13 датафреймов?
