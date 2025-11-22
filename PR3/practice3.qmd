@@ -139,8 +139,10 @@ airports %>%
 
 ```{r}
 planes %>%
-  filter(year == min(year, na.rm = TRUE)) %>%
-  select(tailnum, year)
+  filter(!is.na(year)) %>%
+  arrange(year) %>%
+  head(10) %>%
+  select(year, tailnum)
 ```
 
 #### Какая средняя температура воздуха была в сентябре в аэропорту John FKennedy Intl (в градусах Цельсия).
@@ -148,10 +150,8 @@ planes %>%
 ```{r}
 weather %>%
   filter(origin == "JFK", month == 9) %>%
-  summarise(
-    mean_fahrenheit = mean(temp, na.rm = TRUE),
-    mean_celsius = (mean_fahrenheit - 32) * 5/9
-  )
+  summarise(mean_temp_c = (mean(temp, na.rm = TRUE) - 32)* 5/9) %>%
+  pull(mean_temp_c)
 ```
 
 #### Самолеты какой авиакомпании совершили больше всего вылетов в июне?
