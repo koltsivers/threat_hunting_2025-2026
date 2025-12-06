@@ -1,0 +1,415 @@
+---
+title: "Практическая работа №6"
+author: "koltsivers@yandex.ru"
+format: 
+  md:
+    output-file: README.md
+---
+
+## Цель работы
+
+1.  Закрепить навыки исследования данных журнала Windows Active Directory
+2.  Изучить структуру журнала системы Windows Active Directory
+3.  Закрепить практические навыки использования языка программирования R для обработки данных
+4.  Закрепить знания основных функций обработки данных экосистемы tidyverse языка R
+
+## Исходные данные
+
+1. Программное обеспечение Microsoft Windows 11 Pro
+2. RStudio Desktop
+3. Интерпретатор языка R 4.5.2
+
+## План
+
+1.  Импортируйте данные в R. Датасет находится по адресу https://storage.yandexcloud.net/iamcth-data/dataset.tar.gz.
+2.  Привести датасеты в вид “аккуратных данных”, преобразовать типы столбцов в соответствии с типом данных
+3.  Просмотрите общую структуру данных с помощью функции glimpse()
+4.  Раскройте датафрейм избавившись от вложенных датафреймов
+5.  Минимизируйте количество колонок в датафрейме – уберите колоки с единственным значением параметра.
+6.  Какое количество хостов представлено в данном датасете?
+7.  Подготовьте датафрейм с расшифровкой Windows Event_ID, приведите типы данных к типу их значений.
+8.  Есть ли в логе события с высоким и средним уровнем значимости? Сколько их?
+
+## Шаги:
+
+### Загрузка библиотек
+
+```
+> install.packages("jsonlite")
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/jsonlite_2.0.0.zip'
+Content type 'application/zip' length 1110706 bytes (1.1 MB)
+downloaded 1.1 MB
+
+пакет ‘jsonlite’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\RtmpaUnCaF\downloaded_packages
+> install.packages("dplyr")
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/dplyr_1.1.4.zip'
+Content type 'application/zip' length 1593482 bytes (1.5 MB)
+downloaded 1.5 MB
+
+пакет ‘dplyr’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\RtmpaUnCaF\downloaded_packages
+> install.packages("tidyr")
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/tidyr_1.3.1.zip'
+Content type 'application/zip' length 1277133 bytes (1.2 MB)
+downloaded 1.2 MB
+
+пакет ‘tidyr’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\RtmpaUnCaF\downloaded_packages
+> install.packages("xml2")
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+
+  В наличии есть бинарная версия, но исходники новее:
+     binary source needs_compilation
+xml2  1.4.1  1.5.0              TRUE
+
+  Binaries will be installed
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/xml2_1.4.1.zip'
+Content type 'application/zip' length 1620161 bytes (1.5 MB)
+downloaded 1.5 MB
+
+пакет ‘xml2’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\RtmpaUnCaF\downloaded_packages
+> install.packages("rvest")
+WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+Устанавливаю пакет в ‘C:/Users/Daniil/AppData/Local/R/win-library/4.5’
+(потому что ‘lib’ не определено)
+устанавливаю также зависимость ‘selectr’
+
+  В наличии есть бинарная версия, но исходники новее:
+        binary source needs_compilation
+selectr  0.4-2  0.5-0             FALSE
+
+пробую URL 'https://cran.rstudio.com/bin/windows/contrib/4.5/rvest_1.0.5.zip'
+Content type 'application/zip' length 318725 bytes (311 KB)
+downloaded 311 KB
+
+пакет ‘rvest’ успешно распакован, MD5-суммы проверены
+
+Скачанные бинарные пакеты находятся в
+	C:\Users\Daniil\AppData\Local\Temp\RtmpaUnCaF\downloaded_packages
+устанавливаю пакет ‘selectr’ из исходников
+пробую URL 'https://cran.rstudio.com/src/contrib/selectr_0.5-0.tar.gz'
+Content type 'application/x-gzip' length 54811 bytes (53 KB)
+downloaded 53 KB
+
+* installing *source* package 'selectr' ...
+** this is package 'selectr' version '0.5-0'
+** пакет 'selectr' удачно распакован, MD5 sums проверены
+** using staged installation
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded from temporary location
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (selectr)
+
+Скачанные исходники пакетов находятся в
+	‘C:\Users\Daniil\AppData\Local\Temp\RtmpaUnCaF\downloaded_packages’
+```
+
+```{r}
+library(jsonlite)
+library(dplyr)
+library(tidyr)
+library(xml2)
+library(rvest)
+```
+
+### Импортируйте данные в R. Датасет находится по адресу https://storage.yandexcloud.net/iamcth-data/dataset.tar.gz.
+
+```{r}
+source_url <- "https://storage.yandexcloud.net/iamcth-data/dataset.tar.gz"
+archive_name <- "downloaded_archive.tar.gz"
+
+if (!file.exists(archive_name)) {
+  download.file(url = source_url, destfile = archive_name, 
+                method = "libcurl", quiet = FALSE)
+}
+
+files_in_archive <- untar(tarfile = archive_name, list = TRUE)
+json_file <- files_in_archive[grepl("\\.json$", files_in_archive)]
+
+temp_extract_dir <- tempdir()
+untar(tarfile = archive_name, files = json_file, exdir = temp_extract_dir)
+
+full_json_path <- file.path(temp_extract_dir, json_file)
+
+json_handle <- file(full_json_path, open = "rt")
+loaded_dataset <- stream_in(json_handle)
+close(json_handle)
+```
+
+### Привести датасеты в вид “аккуратных данных”, преобразовать типы столбцов в соответствии с типом данных
+
+```{r}
+identify_datetime_columns <- function(data_column) {
+  if (is.character(data_column) || is.factor(data_column)) {
+    text_values <- as.character(data_column)
+    valid_entries <- text_values[!is.na(text_values)]
+    if (length(valid_entries) > 0) {
+      test_conversion <- try(as.POSIXct(valid_entries[1]), silent = TRUE)
+      return(!inherits(test_conversion, "try-error"))
+    }
+  }
+  return(FALSE)
+}
+
+datetime_cols <- sapply(loaded_dataset, identify_datetime_columns)
+cols_to_convert <- names(loaded_dataset)[datetime_cols]
+
+if (length(cols_to_convert) > 0) {
+  for (column_name in cols_to_convert) {
+    loaded_dataset[[column_name]] <- as.POSIXct(loaded_dataset[[column_name]])
+  }
+}
+
+identify_numeric_columns <- function(data_column) {
+  if (is.character(data_column) || is.factor(data_column)) {
+    char_entries <- as.character(data_column)
+    non_missing <- char_entries[!is.na(char_entries)]
+    if (length(non_missing) == 0) return(FALSE)
+    conversion_test <- suppressWarnings(as.numeric(non_missing))
+    return(all(!is.na(conversion_test)))
+  }
+  return(FALSE)
+}
+
+numeric_cols <- sapply(loaded_dataset, identify_numeric_columns)
+numeric_col_names <- names(loaded_dataset)[numeric_cols]
+
+if (length(numeric_col_names) > 0) {
+  loaded_dataset <- loaded_dataset %>%
+    mutate_at(vars(all_of(numeric_col_names)), ~ as.numeric(as.character(.)))
+}
+
+identify_logical_columns <- function(data_column) {
+  if (is.character(data_column) || is.factor(data_column)) {
+    lower_vals <- tolower(as.character(data_column))
+    unique_vals <- unique(lower_vals[!is.na(lower_vals)])
+    valid_vals <- c("true", "false", "1", "0", "yes", "no")
+    return(all(unique_vals %in% valid_vals))
+  }
+  return(FALSE)
+}
+
+logical_cols <- sapply(loaded_dataset, identify_logical_columns)
+logical_col_names <- names(loaded_dataset)[logical_cols]
+
+if (length(logical_col_names) > 0) {
+  for (col in logical_col_names) {
+    loaded_dataset[[col]] <- case_when(
+      tolower(as.character(loaded_dataset[[col]])) %in% c("true", "1", "yes") ~ TRUE,
+      tolower(as.character(loaded_dataset[[col]])) %in% c("false", "0", "no") ~ FALSE,
+      TRUE ~ NA
+    )
+  }
+}
+```
+
+### Просмотрите общую структуру данных с помощью функции glimpse()
+
+```{r}
+cat("Структура загруженных данных:\n")
+str(loaded_dataset, max.level = 2)
+```
+
+### Раскройте датафрейм избавившись от вложенных датафреймов
+
+```{r}
+list_type_cols <- sapply(loaded_dataset, is.list)
+list_col_names <- names(loaded_dataset)[list_type_cols]
+
+unpacked_data <- loaded_dataset
+
+if (length(list_col_names) > 0) {
+  unpacked_data <- unpacked_data %>%
+    unnest(cols = all_of(list_col_names), names_sep = ".", keep_empty = TRUE)
+}
+
+iteration_count <- 0
+max_iterations <- 6
+
+while (any(sapply(unpacked_data, is.list)) && iteration_count < max_iterations) {
+  remaining_list_cols <- names(unpacked_data)[sapply(unpacked_data, is.list)]
+  unpacked_data <- unpacked_data %>%
+    unnest(cols = all_of(remaining_list_cols), names_sep = ".", keep_empty = TRUE)
+  iteration_count <- iteration_count + 1
+}
+```
+
+### Минимизируйте количество колонок в датафрейме – уберите колоки с единственным значением параметра.
+
+```{r}
+find_constant_columns <- function(dataset) {
+  constant_cols <- character(0)
+  for (col_name in names(dataset)) {
+    unique_non_na <- unique(na.omit(dataset[[col_name]]))
+    if (length(unique_non_na) <= 1) {
+      constant_cols <- c(constant_cols, col_name)
+    }
+  }
+  return(constant_cols)
+}
+
+cols_to_remove <- find_constant_columns(unpacked_data)
+if (length(cols_to_remove) > 0) {
+  cleaned_data <- unpacked_data %>% select(-all_of(cols_to_remove))
+} else {
+  cleaned_data <- unpacked_data
+}
+
+cat("Структура данных после очистки:\n")
+glimpse(cleaned_data)
+```
+
+### Какое количество хостов представлено в данном датасете?
+
+```{r}
+hostname_column <- "winlog.event_data.SourceHostname"
+
+if (hostname_column %in% names(cleaned_data)) {
+  unique_hosts_count <- n_distinct(cleaned_data[[hostname_column]])
+  cat("Количество уникальных хостов:", unique_hosts_count, "\n")
+} else {
+  alternative_columns <- grep("host|Host|source|Source", names(cleaned_data), 
+                             value = TRUE, ignore.case = TRUE)
+  
+  if (length(alternative_columns) > 0) {
+    cat("Столбец", hostname_column, "не найден. Возможные альтернативы:\n")
+    for (alt_col in alternative_columns) {
+      host_count <- n_distinct(cleaned_data[[alt_col]])
+      cat("-", alt_col, ":", host_count, "уникальных значений\n")
+    }
+    best_col <- NULL
+    best_count <- 0
+    for (alt_col in alternative_columns) {
+      host_count <- n_distinct(cleaned_data[[alt_col]])
+      total_rows <- nrow(cleaned_data)
+
+      if (host_count > best_count && host_count < total_rows * 0.9) {
+        best_count <- host_count
+        best_col <- alt_col
+      }
+    }
+    
+    if (!is.null(best_col)) {
+      cat("\nИспользуем столбец:", best_col, "\n")
+      unique_hosts_count <- best_count
+      cat("Количество уникальных хостов:", unique_hosts_count, "\n")
+    }
+  } else {
+    cat("Не удалось найти столбцы с информацией о хостах\n")
+  }
+}
+```
+
+### Подготовьте датафрейм с расшифровкой Windows Event_ID, приведите типы данных к типу их значений.
+
+```{r}
+event_catalog_url <- "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/appendix-l--events-to-monitor"
+html_content <- read_html(event_catalog_url)
+event_tables <- html_table(html_content)
+
+if (length(event_tables) > 0) {
+  event_reference <- event_tables[[1]] %>%
+    rename(
+      Event_ID = `Current Windows Event ID`,
+      Criticality_Level = `Potential Criticality`,
+      Description = `Event Summary`
+    ) %>%
+    mutate(
+      Event_ID = as.integer(Event_ID),
+      Criticality_Level = as.character(Criticality_Level),
+      Description = as.character(Description)
+    )
+  
+  cat("Первые записи справочника событий:\n")
+  print(head(event_reference, 8))
+  assign("event_reference", event_reference, envir = .GlobalEnv)
+}
+```
+
+### Есть ли в логе события с высоким и средним уровнем значимости? Сколько их?
+
+```{r}
+cat("Проверка данных:\n")
+cat("event_reference существует:", exists("event_reference"), "\n")
+cat("winlog.event_id в cleaned_data:", "winlog.event_id" %in% names(cleaned_data), "\n")
+
+if (exists("event_reference") && "winlog.event_id" %in% names(cleaned_data)) {
+  
+  criticality_analysis <- cleaned_data %>%
+    select(`winlog.event_id`) %>%
+    rename(event_id = `winlog.event_id`) %>%  # Переименовываем для удобства
+    left_join(
+      event_reference %>% select(Event_ID, Criticality_Level),
+      by = c("event_id" = "Event_ID")
+    )
+  
+  high_priority_events <- ifelse(
+    is.na(criticality_analysis$Criticality_Level),
+    FALSE,
+    grepl("High", criticality_analysis$Criticality_Level, ignore.case = TRUE)
+  )
+  
+  medium_priority_events <- ifelse(
+    is.na(criticality_analysis$Criticality_Level),
+    FALSE,
+    grepl("Medium", criticality_analysis$Criticality_Level, ignore.case = TRUE)
+  )
+  
+  high_count <- sum(high_priority_events)
+  medium_count <- sum(medium_priority_events)
+  
+  cat("\nРезультаты анализа:\n")
+  cat("Событий с высоким приоритетом:", high_count, "\n")
+  cat("Событий со средним приоритетом:", medium_count, "\n")
+  
+} else {
+  cat("\nАнализ не выполнен:\n")
+  if (!exists("event_reference")) cat("- Справочник событий не загружен\n")
+  if (!"winlog.event_id" %in% names(cleaned_data)) cat("- Столбец winlog.event_id не найден в данных\n")
+}
+```
+
+## Оценка результата
+
+В рамках практческой работы была исследована выгрузка из SIEM-системы доброй организации на факт комрометации системы.
+
+## Вывод
+
+В практической работе мы изучили структуру журнала системы Windows Active Directory, закреили практические навыки использования языка программирования R для обработки данных и знания основных функций обработки данных экосистемы tidyverse языка R.
