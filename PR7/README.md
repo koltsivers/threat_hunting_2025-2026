@@ -38,7 +38,7 @@ koltsivers@yandex.ru
 
 #### Проверим доступность данных в Yandex Object Storage
 
-Gерейдем по ссылке https://storage.yandexcloud.net/arrow-datasets и
+Перейдем по ссылке https://storage.yandexcloud.net/arrow-datasets и
 проверим существование файла yaqry_dataset.pqt
 
 ![](./img/img1.png)
@@ -96,3 +96,4 @@ Gерейдем по ссылке https://storage.yandexcloud.net/arrow-datasets
 изучили возможности технологии Yandex Query для анализа
 структурированных наборов данных, а также что такое S3 хранилище и как
 им пользоваться.
+
