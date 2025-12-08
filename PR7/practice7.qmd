@@ -37,7 +37,7 @@ format:
 
 #### Проверим доступность данных в Yandex Object Storage
 
-Gерейдем по ссылке https://storage.yandexcloud.net/arrow-datasets и проверим существование файла yaqry_dataset.pqt
+Перейдем по ссылке https://storage.yandexcloud.net/arrow-datasets и проверим существование файла yaqry_dataset.pqt
 
 ![](./img/img1.png)
 
